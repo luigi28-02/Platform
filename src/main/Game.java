@@ -1,5 +1,10 @@
 package main;
 
+import entities.Player;
+import levels.LevelManager;
+
+import java.awt.*;
+
 public class Game implements Runnable {
     private GameWindow gameWindow;
     private GamePanel gamePanel;
@@ -8,20 +13,44 @@ public class Game implements Runnable {
     //Update viene utilizzato per far aggiornare la scena quando dobbiamo far muovere il player e in generale far cambiare le cose nella scena
     //Mi sembra di aver capito che viene fatto molto piu spesso rispetto agli FPS
     private final int UPS_SET=200;
+    private Player player;
+    private LevelManager levelManager;
+    public final static int TILES_DEFAULT_SIZE=32;
+    public final static float SCALE=1.5f;
+    public final static int TILES_IN_WIDTH=26;
+    public final static int TILES_IN_HEIGHT=14;
+    public final static int TILES_SIZE=(int)(TILES_DEFAULT_SIZE*SCALE);
+    public final static int GAME_WIDTH=TILES_SIZE*TILES_IN_WIDTH;
+    public final static int GAME_HEIGHT=TILES_SIZE*TILES_IN_HEIGHT;
+
+
     public Game(){
-        gamePanel=new GamePanel();
+        initClasses();
+        gamePanel=new GamePanel(this);
         gameWindow=new GameWindow(gamePanel);
         //Request of input focus
         gamePanel.requestFocusInWindow();
         startGameLoop();
 
     }
-private void startGameLoop(){
+
+    private void initClasses() {
+
+        player=new Player(200,200);
+        levelManager=new LevelManager(this);
+    }
+
+    private void startGameLoop(){
         gameThread=new Thread(this);
         gameThread.start();
 }
 public void Update(){
-        gamePanel.updateGame();
+        player.update();
+        levelManager.update();
+}
+public void render(Graphics g){
+        levelManager.draw(g);
+        player.render(g);
 }
     @Override
     public void run() {
@@ -57,5 +86,13 @@ public void Update(){
             updates=0;
         }
     }
+    }
+    public Player getPlayer(){
+
+     return player;
+    }
+
+    public void windowFocusLost() {
+        player.resetDirBooleans();
     }
 }
