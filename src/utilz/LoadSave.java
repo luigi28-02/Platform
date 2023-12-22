@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class LoadSave {
-    public  static final String PLAYER_ATLAS="player_sprites.png";
+    public  static final String PLAYER_ATLAS="Fighter_Spritelist.png";
     public  static final String LEVEL_ATLAS="outside_sprites.png";
     public  static final String LEVEL_ONE_DATA="level_one_data.png";
+    public  static final String  MENU_BUTTONS="button_atlas.png";
     public static BufferedImage GetSpriteAtlas(String fileName) {
         //Crea un'istanza di Input Stream e attraverso getClass restituisce l'oggetto Class associato alla classe in cui viene
         //Eseguito il codice. GetResourceAsStream viene chiamato sull'oggetto class,cerca la risorsa associata e resituisce un

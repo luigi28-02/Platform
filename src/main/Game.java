@@ -1,10 +1,13 @@
 package main;
 
 import entities.Player;
+import gameStates.Gamestate;
+import gameStates.Playing;
 import levels.Level;
 import levels.LevelManager;
 
 import java.awt.*;
+import gameStates.Menu;
 
 public class Game implements Runnable {
     private GameWindow gameWindow;
@@ -14,8 +17,11 @@ public class Game implements Runnable {
     //Update viene utilizzato per far aggiornare la scena quando dobbiamo far muovere il player e in generale far cambiare le cose nella scena
     //Mi sembra di aver capito che viene fatto molto piu spesso rispetto agli FPS
     private final int UPS_SET=200;
-    private Player player;
-    private LevelManager levelManager;
+
+    private Playing playing;
+    private Menu menu;
+
+
     public final static int TILES_DEFAULT_SIZE=32;
     public final static float SCALE=1f;
     public final static int TILES_IN_WIDTH=26;
@@ -36,10 +42,8 @@ public class Game implements Runnable {
     }
 
     private void initClasses() {
-        levelManager=new LevelManager(this);
-        player=new Player(200,200,(int)(64*SCALE),(int)(40*SCALE));
-        player.loadlvlData(levelManager.getCurrentLevel().getLvlData());
-
+        menu=new Menu(this);
+        playing=new Playing(this);
     }
 
     private void startGameLoop(){
@@ -47,12 +51,31 @@ public class Game implements Runnable {
         gameThread.start();
 }
 public void Update(){
-        player.update();
-        levelManager.update();
+        switch(Gamestate.state){
+
+            case PLAYING:
+                playing.update();
+                break;
+            case MENU:
+                menu.update();
+                break;
+            case OPTIONS:
+            case QUIT:
+            default:
+                System.exit(0);
+                break;
+        }
 }
 public void render(Graphics g){
-        levelManager.draw(g);
-        player.render(g);
+    switch(Gamestate.state){
+
+        case PLAYING:
+            playing.draw(g);
+            break;
+        case MENU:
+            menu.draw(g);
+            break;
+    }
 }
     @Override
     public void run() {
@@ -89,12 +112,16 @@ public void render(Graphics g){
         }
     }
     }
-    public Player getPlayer(){
-
-     return player;
-    }
 
     public void windowFocusLost() {
-        player.resetDirBooleans();
+        if(Gamestate.state==Gamestate.PLAYING){
+            playing.getPlayer().resetDirBooleans();
+        }
+    }
+    public Menu getMenu(){
+        return menu;
+    }
+    public Playing getPlaying(){
+        return playing;
     }
 }
