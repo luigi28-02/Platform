@@ -16,11 +16,13 @@ public class HepMethods {
 
                }
            }
-        }return false;
+        }
+        return false;
     }
 
     public static boolean IsSolid(float x, float y, int[][] lvlData) {
-        if (x < 0 || x >= Game.GAME_WIDTH) {
+        int maxWidth=lvlData[0].length*Game.TILES_SIZE;
+        if (x < 0 || x >=maxWidth) {
             return true;
         }
         if (y < 0 || y >= Game.GAME_HEIGHT) {
@@ -29,6 +31,10 @@ public class HepMethods {
             float xIndex = x / Game.TILES_SIZE;
             float yIndex = y / Game.TILES_SIZE;
             int value = lvlData[(int) yIndex][(int) xIndex];
+            return IsTileSolid((int)xIndex,(int)yIndex,lvlData);
+        }
+        public static boolean IsTileSolid(int XTile,int YTile,int [][] lvlData){
+            int value = lvlData[(int) YTile][(int) XTile];
             if (value >= 48 || value < 0 || value != 11) {
                 return true;
             } else {
@@ -53,7 +59,7 @@ public class HepMethods {
         }
         }
     public static float GetEntityYUnderRoofOrAboveFloor(Rectangle2D.Float hitbox,float airSpeed){
-        int currentTile=(int)(hitbox.y/Game.TILES_SIZE);
+        int currentTile=((int)(hitbox.y+hitbox.height-1)/Game.TILES_SIZE);
         System.out.println("Current Tiles Y:"+currentTile);
         if(airSpeed>0){
             //Falling
@@ -65,6 +71,41 @@ public class HepMethods {
             return currentTile*Game.TILES_SIZE;
         }
 
+    }
+
+    public static boolean isEntityOnFloor(Rectangle2D.Float hitbox, int[][] levelData) {
+
+        //Controllo sul pixel di estrema destra ed estrema sinistra, se sono entrambi non blocco, allora siamo in aria
+        if (!IsSolid(hitbox.x, hitbox.y + hitbox.height + 1, levelData) && !IsSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, levelData)) {
+            return false;
+        }
+        return true;
+    }
+    public static boolean IsFloor(Rectangle2D.Float hitbox,float xSpeed, int[][] levelData){
+        return IsSolid(hitbox.x+xSpeed,hitbox.y+hitbox.height+1,levelData);
+    }
+
+    public static boolean IsAllTileWalkable(int xStart,int XEnd,int y,int [][] lvlData){
+        for (int i=0;i<XEnd-xStart;i++){
+            if(IsTileSolid(xStart+i,y,lvlData)){
+                return false;
+            }
+            if(!IsTileSolid(xStart+i,y+1,lvlData)){
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    public static boolean isSightClear(int[][] lvlData, Rectangle2D.Float firsthitBox, Rectangle2D.Float secondhitBox, int tileY) {
+        int firstXTile=(int)(firsthitBox.x/Game.TILES_SIZE);
+        int secondXTile=(int)(secondhitBox.x/Game.TILES_SIZE);
+        if(firstXTile>secondXTile){
+           return IsAllTileWalkable(secondXTile,firstXTile,tileY,lvlData);
+        }else{
+            return IsAllTileWalkable(firstXTile,secondXTile,tileY,lvlData);
+        }
     }
     }
 

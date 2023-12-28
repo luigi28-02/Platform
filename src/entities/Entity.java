@@ -15,10 +15,10 @@ public abstract class Entity {
         this.height=height;
 
     }
-    protected void drawHitBox(Graphics g){
+    protected void drawHitBox(Graphics g,int xleveloffset){
         //For debugging the hitbox
         g.setColor(Color.red);
-        g.drawRect((int)hitBox.x,(int)hitBox.y,(int) hitBox.width,(int) hitBox.height);
+        g.drawRect((int)hitBox.x-xleveloffset,(int)hitBox.y,(int) hitBox.width,(int) hitBox.height);
 
     }
 
